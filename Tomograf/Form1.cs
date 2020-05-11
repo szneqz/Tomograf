@@ -9,15 +9,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing.Imaging;
 using System.IO;
-using ClearCanvas.Dicom.Codec;
-using ClearCanvas.Common.Utilities;
-using ClearCanvas.Dicom;
-using ClearCanvas.Dicom.Network;
-using ClearCanvas.Common;
-using ClearCanvas.ImageViewer;
-using ClearCanvas.ImageViewer.Imaging;
-using ClearCanvas.ImageViewer.Graphics;
-using ClearCanvas.ImageViewer.StudyManagement;
 
 namespace Tomograf
 {
