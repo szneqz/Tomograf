@@ -1,4 +1,6 @@
-﻿using System;
+﻿//Stworzone przez Krzysztof Schneider i Mieszko Taranczewski na rzecz przedmiotu "Informatyka w Medycynie" 2020
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -19,10 +21,8 @@ namespace Tomograf
         private Bitmap globalOutBitmap;
         private List<Bitmap> stepOutBitmaps;
 
-
-
         public Image CenterDrawImage(Image imageBot, Image imageTop)
-        {
+        {   //funkcja rysująca mniejszy obraz w większym obrazie
             using (var graphics = Graphics.FromImage(imageBot))
             {
                 int y = (imageBot.Height / 2) - imageTop.Height / 2;
@@ -35,7 +35,7 @@ namespace Tomograf
         }
 
         private static Bitmap DrawFilledRectangle(int x, int y)
-        {
+        {   //funkcja rysująca czarny prostokąt o podanych wymiarach
             Bitmap bmp = new Bitmap(x, y);
             using (Graphics graph = Graphics.FromImage(bmp))
             {
@@ -46,14 +46,14 @@ namespace Tomograf
         }
 
         public static int diagonal(int x, int y)
-        {
+        {   //funkcja obliczająca długość przekątnej prostokąta o wymiarach x i y
             double result = Math.Sqrt(x * x + y * y);
             result = Math.Ceiling(result);
             return (int)result;
         }
 
         public static Bitmap MakeGrayscale3(Bitmap original)
-        {
+        {   //funkcja zamieniająca kolorowoy obraz w obraz w skali szarości
             Bitmap newBitmap = new Bitmap(original.Width, original.Height);
 
             using (Graphics g = Graphics.FromImage(newBitmap))
@@ -79,7 +79,7 @@ namespace Tomograf
             return newBitmap;
         }
         private static Image cropImage(Image img, int cutWidth)
-        {
+        {   //funkcja zakrywająca określoną część obrazu czarnym tłem
             Bitmap bmpImage = new Bitmap(img);
             for(int i = cutWidth; i < img.Width; i++)
             {
@@ -89,7 +89,7 @@ namespace Tomograf
             return bmpImage;
         }
         private float bresenhamReader(Bitmap img, float diag, int x1, int y1, int x2, int y2)
-        {
+        {   //funkcja algorytmu bresenhama odczytująca jasności na linii i sumująca je do jednej zmiennej
             float result = 0;
             int dx = Math.Abs(x2 - x1), sx = x1 < x2 ? 1 : -1;
             int dy = Math.Abs(y2 - y1), sy = y1 < y2 ? 1 : -1;
@@ -107,7 +107,8 @@ namespace Tomograf
         }
 
         private void bresenhamSearchStr(Bitmap rimg, float[] img, float add, int x1, int y1, int x2, int y2)
-        {
+        {   //funkcja algorytmu bresenhama rysująca obraz w określonej tablicy zmiennych w celu znalezienia maksymalnej jasności w obrazie
+            //wykorzystywanej do normalizacji danych
             int dx = Math.Abs(x2 - x1), sx = x1 < x2 ? 1 : -1;
             int dy = Math.Abs(y2 - y1), sy = y1 < y2 ? 1 : -1;
             int err = (dx > dy ? dx : -dy) / 2, e2;
@@ -128,7 +129,7 @@ namespace Tomograf
             }
         }
         private Bitmap bresenhamDraw(Bitmap img, int add, int x1, int y1, int x2, int y2)
-        {
+        {   //funkcja algorytmu bresenhama, której celem jest narysowanie linii o określonej jasności
             int dx = Math.Abs(x2 - x1), sx = x1 < x2 ? 1 : -1;
             int dy = Math.Abs(y2 - y1), sy = y1 < y2 ? 1 : -1;
             int err = (dx > dy ? dx : -dy) / 2, e2;
@@ -148,13 +149,6 @@ namespace Tomograf
             }
             return result;
         }
-        public static byte[] ImageToByteArray(Image imageIn)
-        {
-            MemoryStream ms = new MemoryStream();
-
-            imageIn.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
-            return ms.ToArray();
-        }
 
         public Main()
         {
@@ -167,7 +161,7 @@ namespace Tomograf
         }
 
         private void buttonLoad_Click(object sender, EventArgs e)
-        {
+        {   //funkcja ładująca obraz z dysku
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.Filter = "";
 
@@ -207,7 +201,7 @@ namespace Tomograf
         }
 
         private void buttonStart_Click(object sender, EventArgs e)
-        {
+        {   //funkcja główna po wciśnięciu przycisku "Rozpocznij symulację"
             int rangeScan = Decimal.ToInt32(numericRangeScan.Value);
             int amDet = Decimal.ToInt32(numericAmountDet.Value);
             int amScans = Decimal.ToInt32(numericAmountScans.Value);
@@ -219,10 +213,9 @@ namespace Tomograf
             //Sinogram
             List<float> data = new List<float>();
             Bitmap resultBitmap = DrawFilledRectangle(amScans, amDet);
-            Bitmap resultBitmap2 = DrawFilledRectangle(amScans, amDet);
 
             for (int i = 0; i < amScans; i++)
-            {
+            {   //tworzenie sinogramu poprzez odczytywanie wartości z obrazka wejściowego
                 float mainAngle = i * angleStep;
                 float actAngle = mainAngle + 360.0f - 0.5f * rangeScan;
                 float actAngle2 = mainAngle + 180.0f + 0.5f * rangeScan;
@@ -261,18 +254,13 @@ namespace Tomograf
             }
 
             if (checkBoxFilter.Checked)
-            {
+            {   //filtrowanie sinogramu
                 for (int i = 0; i < amScans; i++)
                 {
                     for (int j = 0; j < amDet; j++)
                     {
                         for (int k = 0; k < 10; k++)
                         {
-                            if (k == 0)
-                            {
-                                resultBitmap2.SetPixel(i, j, resultBitmap.GetPixel(i, j));
-                                continue;
-                            }
                             if (k % 2 == 1)
                             {
                                 float filter = (float)(-4 / (Math.PI * Math.PI)) / (k * k);
@@ -288,7 +276,6 @@ namespace Tomograf
                         }
                     }
                 }
-                resultBitmap = resultBitmap2.Clone() as Bitmap;
             }
 
             globalSiBitmap = resultBitmap;
@@ -299,7 +286,7 @@ namespace Tomograf
             float[] searchList = new float[globalInBitmap.Width * globalInBitmap.Height];
 
             for (int i = 0; i < amScans; i++)
-            {
+            {   //szukanie wartości do normalizacji jasności
                 float mainAngle = i * angleStep;
                 float actAngle = mainAngle + 360.0f - 0.5f * rangeScan;
                 float actAngle2 = mainAngle + 180.0f + 0.5f * rangeScan;
@@ -336,20 +323,19 @@ namespace Tomograf
             }
 
             for(int i = 0; i < globalInBitmap.Width * globalInBitmap.Height; i++)
-            {
+            {   //szukanie najjaśniejszego punktu
                 if (searchList[i] > str)
                     str = searchList[i];
             }
-            str = str / 255;
+            str = str / 510;
             //BeforeOutput END
 
             //Output
             resultBitmap = DrawFilledRectangle(globalInBitmap.Width, globalInBitmap.Height);
             stepOutBitmaps = new List<Bitmap>();
-            str /= 2.0f;
 
             for (int i = 0; i < amScans; i++)
-            {
+            {   //rysowanie obrazu wyjściowego
                 float mainAngle = i * angleStep;
                 float actAngle = mainAngle + 360.0f - 0.5f * rangeScan;
                 float actAngle2 = mainAngle + 180.0f + 0.5f * rangeScan;
@@ -416,7 +402,7 @@ namespace Tomograf
         }
 
         private void scrollProgress_Scroll(object sender, ScrollEventArgs e)
-        {
+        {   //funkcja wywoływana przy przesuwaniu paska kroku
             labelStepProgress.Text = scrollProgress.Value.ToString();
             pictureSinogram.Image = cropImage(globalSiBitmap, scrollProgress.Value);
             pictureOut.Image = stepOutBitmaps.ElementAt((int)Math.Ceiling((double)(scrollProgress.Value)/5 - 1));
@@ -425,7 +411,7 @@ namespace Tomograf
         }
 
         private void buttonSaveSinogram_Click(object sender, EventArgs e)
-        {
+        {   //zapisywanie sinogramu
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.Filter = "Images|*.png;*.bmp;*.jpg";
             ImageFormat format = ImageFormat.Png;
@@ -446,7 +432,7 @@ namespace Tomograf
         }
 
         private void buttonSaveOutput_Click(object sender, EventArgs e)
-        {
+        {   //zapisywanie obrazu wyjściowego
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.Filter = "Images|*.png;*.bmp;*.jpg";
             ImageFormat format = ImageFormat.Png;
