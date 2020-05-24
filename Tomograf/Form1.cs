@@ -11,6 +11,12 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing.Imaging;
 using System.IO;
+using Dicom;
+using Dicom.Imaging;
+using Dicom.IO;
+using System.Runtime.InteropServices;
+using Dicom.IO.Buffer;
+
 
 namespace Tomograf
 {
@@ -386,6 +392,8 @@ namespace Tomograf
             labelMaxStep.Text = "/ " + amScans.ToString();
             //scroll info END
 
+            saveDicomButton.Enabled = true;
+
             //RMSE
             double RMSE = 0.0;
             long amount = globalOutBitmap.Width * globalOutBitmap.Height;
@@ -399,6 +407,15 @@ namespace Tomograf
             RMSE = Math.Sqrt(RMSE / amount);
             labelRMSE.Text = RMSE.ToString();
             //RMSE END
+
+            //DICOM DATA
+            textBoxName.Enabled = true;
+            textBoxID.Enabled = true;
+            dateTimePickerBirthDate.Enabled = true;
+            radioButtonGenderF.Enabled = true;
+            radioButtonGenderM.Enabled = true;
+            saveDicomButton.Enabled = true;
+            //DICOM DATA END
         }
 
         private void scrollProgress_Scroll(object sender, ScrollEventArgs e)
@@ -452,6 +469,131 @@ namespace Tomograf
             }
         }
 
-      
+        public static byte[] GetPixels(Bitmap bitmap)
+        {
+            byte[] bytes = new byte[bitmap.Width * bitmap.Height * 3];
+            int wide = bitmap.Width;
+            int i = 0;
+            int height = bitmap.Height;
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < wide; x++)
+                {
+                    var srcColor = bitmap.GetPixel(x, y);
+                    //bytes[i] = (byte)(srcColor.R * .299 + srcColor.G * .587 + srcColor.B * .114);
+                    bytes[i] = srcColor.R;
+                    i++;
+                    bytes[i] = srcColor.G;
+                    i++;
+                    bytes[i] = srcColor.B;
+                    i++;
+                }
+            }
+            return bytes;
+        }
+
+        public static void ImportImage(Bitmap img, String id, String name, String birthDate, String gender, String path)
+        {
+            Bitmap bitmap = img;
+            
+            byte[] pixels = GetPixels(bitmap);
+            MemoryByteBuffer buffer = new MemoryByteBuffer(pixels);
+            DicomDataset dataset = new DicomDataset();
+            //FillDataset(dataset);
+            dataset.Add(DicomTag.PhotometricInterpretation, PhotometricInterpretation.Rgb.Value);
+            dataset.Add(DicomTag.Rows, (ushort)bitmap.Height);
+            dataset.Add(DicomTag.Columns, (ushort)bitmap.Width);
+            dataset.Add(DicomTag.BitsAllocated, (ushort)8);
+            dataset.Add(DicomTag.SOPClassUID, "1.2.840.10008.5.1.4.1.1.2");
+            dataset.Add(DicomTag.SOPInstanceUID, "1.2.840.10008.5.1.4.1.1.2.20181120090837121314");
+
+            DicomPixelData pixelData = DicomPixelData.Create(dataset, true);
+            pixelData.BitsStored = 8;
+            //pixelData.BitsAllocated = 8;
+            pixelData.SamplesPerPixel = 3;
+            pixelData.HighBit = 7;
+            pixelData.PixelRepresentation = 0;
+            pixelData.PlanarConfiguration = 0;
+            pixelData.AddFrame(buffer);
+
+            dataset.Add(DicomTag.PatientID, id);
+            dataset.Add(DicomTag.PatientName, name);
+            dataset.Add(DicomTag.PatientBirthDate, birthDate);
+            dataset.Add(DicomTag.PatientSex, gender);
+            dataset.Add(DicomTag.StudyDate, DateTime.Now);
+            dataset.Add(DicomTag.StudyTime, DateTime.Now);
+            dataset.Add(DicomTag.AccessionNumber, string.Empty);
+            dataset.Add(DicomTag.ReferringPhysicianName, string.Empty);
+            dataset.Add(DicomTag.StudyID, "1");
+            dataset.Add(DicomTag.SeriesNumber, "1");
+            dataset.Add(DicomTag.ModalitiesInStudy, "CR");
+            dataset.Add(DicomTag.Modality, "CR");
+            dataset.Add(DicomTag.NumberOfStudyRelatedInstances, "1");
+            dataset.Add(DicomTag.NumberOfStudyRelatedSeries, "1");
+            dataset.Add(DicomTag.NumberOfSeriesRelatedInstances, "1");
+
+            DicomFile dicomfile = new DicomFile(dataset);
+            dicomfile.Save(@path);
+            //dicomfile.Save(@"D:\STUDIA\6 semestr\InformatykaWMedycynie\Projekt1\DANE\test2.dcm");
+        }
+
+        private void saveDicomButton_Click(object sender, EventArgs e)
+        {
+            String path = "";
+            String birthDate = dateTimePickerBirthDate.Value.ToString("dd/MM/yyyy");
+            String gender = "M";
+            if (radioButtonGenderF.Checked)
+                gender = "F";
+
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "DICOM|*.dcm";
+            if (sfd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                path = sfd.FileName;
+                ImportImage(globalOutBitmap, textBoxID.Text, textBoxName.Text, birthDate, gender, path);
+            }
+        }
+
+        private void loadDicomButton_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog()
+            {
+                Filter = "DICOM|*.dcm"
+            };
+
+            if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                DicomFile file = DicomFile.Open(ofd.FileName);
+                Bitmap img = new DicomImage(ofd.FileName).RenderImage().AsClonedBitmap();
+                globalOutBitmap = img;
+                pictureOut.Image = img;
+                pictureSinogram.Image = null;
+                pictureIn.Image = null;
+                buttonStart.Enabled = false;
+                scrollProgress.Enabled = false;
+                buttonSaveSinogram.Enabled = false;
+                textBoxName.Enabled = true;
+                textBoxName.Text = file.Dataset.GetSingleValue<string>(DicomTag.PatientName);
+                textBoxID.Enabled = true;
+                textBoxID.Text = file.Dataset.GetSingleValue<string>(DicomTag.PatientID);
+                dateTimePickerBirthDate.Enabled = true;
+                dateTimePickerBirthDate.Value = DateTime.Parse(file.Dataset.GetSingleValue<string>(DicomTag.PatientBirthDate));
+                String gender = file.Dataset.GetSingleValue<string>(DicomTag.PatientSex);
+                radioButtonGenderF.Enabled = true;
+                radioButtonGenderM.Enabled = true;
+                if (gender == "M")
+                {
+                    radioButtonGenderM.Checked = true;
+                    radioButtonGenderF.Checked = false;
+                }
+                else
+                {
+                    radioButtonGenderM.Checked = false;
+                    radioButtonGenderF.Checked = true;
+                }
+                saveDicomButton.Enabled = true;
+            }
+
+        }
     }
 }

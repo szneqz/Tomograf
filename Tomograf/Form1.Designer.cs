@@ -52,12 +52,25 @@
             this.checkBoxFilter = new System.Windows.Forms.CheckBox();
             this.label8 = new System.Windows.Forms.Label();
             this.labelRMSE = new System.Windows.Forms.Label();
+            this.saveDicomButton = new System.Windows.Forms.Button();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.textBoxID = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.textBoxName = new System.Windows.Forms.TextBox();
+            this.dateTimePickerBirthDate = new System.Windows.Forms.DateTimePicker();
+            this.label13 = new System.Windows.Forms.Label();
+            this.radioButtonGenderM = new System.Windows.Forms.RadioButton();
+            this.radioButtonGenderF = new System.Windows.Forms.RadioButton();
+            this.loadDicomButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureIn)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureSinogram)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureOut)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericRangeScan)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericAmountDet)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericAmountScans)).BeginInit();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -328,11 +341,136 @@
             this.labelRMSE.TabIndex = 27;
             this.labelRMSE.Text = "brak danych";
             // 
+            // saveDicomButton
+            // 
+            this.saveDicomButton.Enabled = false;
+            this.saveDicomButton.Location = new System.Drawing.Point(214, 480);
+            this.saveDicomButton.Name = "saveDicomButton";
+            this.saveDicomButton.Size = new System.Drawing.Size(160, 23);
+            this.saveDicomButton.TabIndex = 28;
+            this.saveDicomButton.Text = "Zapisz plik DICOM";
+            this.saveDicomButton.UseVisualStyleBackColor = true;
+            this.saveDicomButton.Click += new System.EventHandler(this.saveDicomButton_Click);
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.loadDicomButton);
+            this.panel1.Controls.Add(this.radioButtonGenderF);
+            this.panel1.Controls.Add(this.radioButtonGenderM);
+            this.panel1.Controls.Add(this.label13);
+            this.panel1.Controls.Add(this.dateTimePickerBirthDate);
+            this.panel1.Controls.Add(this.label11);
+            this.panel1.Controls.Add(this.label12);
+            this.panel1.Controls.Add(this.textBoxName);
+            this.panel1.Controls.Add(this.label9);
+            this.panel1.Controls.Add(this.textBoxID);
+            this.panel1.Controls.Add(this.saveDicomButton);
+            this.panel1.Location = new System.Drawing.Point(935, 34);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(374, 503);
+            this.panel1.TabIndex = 29;
+            // 
+            // textBoxID
+            // 
+            this.textBoxID.Enabled = false;
+            this.textBoxID.Location = new System.Drawing.Point(9, 29);
+            this.textBoxID.Name = "textBoxID";
+            this.textBoxID.Size = new System.Drawing.Size(100, 22);
+            this.textBoxID.TabIndex = 29;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(6, 9);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(21, 17);
+            this.label9.TabIndex = 30;
+            this.label9.Text = "ID";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(9, 103);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(105, 17);
+            this.label11.TabIndex = 36;
+            this.label11.Text = "Data urodzenia";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(9, 54);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(103, 17);
+            this.label12.TabIndex = 34;
+            this.label12.Text = "Imię i Nazwisko";
+            // 
+            // textBoxName
+            // 
+            this.textBoxName.Enabled = false;
+            this.textBoxName.Location = new System.Drawing.Point(9, 74);
+            this.textBoxName.Name = "textBoxName";
+            this.textBoxName.Size = new System.Drawing.Size(100, 22);
+            this.textBoxName.TabIndex = 33;
+            // 
+            // dateTimePickerBirthDate
+            // 
+            this.dateTimePickerBirthDate.Enabled = false;
+            this.dateTimePickerBirthDate.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dateTimePickerBirthDate.Location = new System.Drawing.Point(9, 124);
+            this.dateTimePickerBirthDate.Name = "dateTimePickerBirthDate";
+            this.dateTimePickerBirthDate.Size = new System.Drawing.Size(200, 22);
+            this.dateTimePickerBirthDate.TabIndex = 37;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(9, 149);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(35, 17);
+            this.label13.TabIndex = 38;
+            this.label13.Text = "Płeć";
+            // 
+            // radioButtonGenderM
+            // 
+            this.radioButtonGenderM.AutoSize = true;
+            this.radioButtonGenderM.Checked = true;
+            this.radioButtonGenderM.Enabled = false;
+            this.radioButtonGenderM.Location = new System.Drawing.Point(12, 170);
+            this.radioButtonGenderM.Name = "radioButtonGenderM";
+            this.radioButtonGenderM.Size = new System.Drawing.Size(99, 21);
+            this.radioButtonGenderM.TabIndex = 39;
+            this.radioButtonGenderM.TabStop = true;
+            this.radioButtonGenderM.Text = "Mężczyzna";
+            this.radioButtonGenderM.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonGenderF
+            // 
+            this.radioButtonGenderF.AutoSize = true;
+            this.radioButtonGenderF.Enabled = false;
+            this.radioButtonGenderF.Location = new System.Drawing.Point(12, 197);
+            this.radioButtonGenderF.Name = "radioButtonGenderF";
+            this.radioButtonGenderF.Size = new System.Drawing.Size(77, 21);
+            this.radioButtonGenderF.TabIndex = 40;
+            this.radioButtonGenderF.Text = "Kobieta";
+            this.radioButtonGenderF.UseVisualStyleBackColor = true;
+            // 
+            // loadDicomButton
+            // 
+            this.loadDicomButton.Location = new System.Drawing.Point(214, 451);
+            this.loadDicomButton.Name = "loadDicomButton";
+            this.loadDicomButton.Size = new System.Drawing.Size(160, 23);
+            this.loadDicomButton.TabIndex = 41;
+            this.loadDicomButton.Text = "Wczytaj plik DICOM";
+            this.loadDicomButton.UseVisualStyleBackColor = true;
+            this.loadDicomButton.Click += new System.EventHandler(this.loadDicomButton_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(942, 544);
+            this.ClientSize = new System.Drawing.Size(1321, 544);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.labelRMSE);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.checkBoxFilter);
@@ -366,6 +504,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericRangeScan)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericAmountDet)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericAmountScans)).EndInit();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -397,6 +537,18 @@
         private System.Windows.Forms.CheckBox checkBoxFilter;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label labelRMSE;
+        private System.Windows.Forms.Button saveDicomButton;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.TextBox textBoxName;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox textBoxID;
+        private System.Windows.Forms.RadioButton radioButtonGenderF;
+        private System.Windows.Forms.RadioButton radioButtonGenderM;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.DateTimePicker dateTimePickerBirthDate;
+        private System.Windows.Forms.Button loadDicomButton;
     }
 }
 
